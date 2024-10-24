@@ -1,4 +1,5 @@
 import ast
+import re
 import sys
 from crewai import Crew
 
@@ -43,14 +44,18 @@ def run():
     # print(subtasks)
     dev_tasks = []
     developer = DeveloperAgent().get_agent()
+    cleaner = DeveloperAgent().get_cleaner()
     for subtask in subtasks:
         prompt = f"""{subtask['prompt']}, Function name: {subtask['function_name']}"""
         task = DeveloperTask().develop(prompt, developer)
         dev_tasks.append(task)
 
+    print(cleaner)
+    cleaner_task = DeveloperTask().clean(cleaner)
+    number_of_functions = len(dev_tasks)
     dev_crew = Crew(
-        agents = [developer],
-        tasks = [task for task in dev_tasks]
+        agents = [developer]*number_of_functions + [cleaner],
+        tasks = [task for task in dev_tasks] + [cleaner_task]
     )
 
     result = dev_crew.kickoff()
@@ -60,6 +65,10 @@ def run():
     print("## Here is the result")
     print("################################################\n")
     print(result)
+
+    code = re.sub(r'^\s*```\s*([\s\S]*?)\s*```\s*$', r'\1', result.raw)
+    with open("generated_code.py", "w") as code_file:
+        code_file.write(code)
 
 if __name__ == '__main__':
     run()
