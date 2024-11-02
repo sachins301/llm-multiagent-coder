@@ -1,7 +1,11 @@
 import ast
 import re
 import sys
-from crewai import Crew
+from dotenv import load_dotenv
+import os
+from crewai import Crew, Process
+from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
+
 
 from agents.developer_agent import DeveloperAgent
 from agents.lead_agent import LeadAgent
@@ -50,12 +54,20 @@ def run():
         task = DeveloperTask().develop(prompt, developer)
         dev_tasks.append(task)
 
-    print(cleaner)
-    cleaner_task = DeveloperTask().clean(cleaner)
-    number_of_functions = len(dev_tasks)
+    # cleaner_task = DeveloperTask().clean(cleaner)
+    # number_of_functions = len(dev_tasks)
     dev_crew = Crew(
-        agents = [developer]*number_of_functions + [cleaner],
-        tasks = [task for task in dev_tasks] + [cleaner_task]
+        agents = [developer],
+        tasks = [task for task in dev_tasks],
+        process= Process.sequential,
+        memory= True,
+        verbose= True,
+        embedder={
+            "provider": "ollama",
+            "config": {
+                "model": "mxbai-embed-large"
+            }
+        }
     )
 
     result = dev_crew.kickoff()
@@ -66,9 +78,21 @@ def run():
     print("################################################\n")
     print(result)
 
-    code = re.sub(r'^\s*```\s*([\s\S]*?)\s*```\s*$', r'\1', result.raw)
+
+    # Extract all content within triple backticks
+    code_blocks = re.findall(r'```([\s\S]*?)```', result.raw)
+
+    # Join all extracted code blocks into a single string
+    code = "\n\n".join(code_blocks).strip()
+
+    # Display the cleaned code for verification
+    print("\n\n################################################")
+    print(code)
+
+    # Write the cleaned code to a file
     with open("generated_code.py", "w") as code_file:
         code_file.write(code)
 
 if __name__ == '__main__':
+    load_dotenv()  # Load variables from .env file
     run()

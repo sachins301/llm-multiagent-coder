@@ -1,26 +1,24 @@
-class Node:
-    def __init__(self, value):
-        self.value = value
-        self.next = None
+def find_median_merged_array(merged_array):
+    # Sort the merged array
+    sorted_array = merge_sort_arrays([], merged_array)
+    
+    # Calculate the median of the array
+    n = len(sorted_array)
+    if n % 2 == 0:
+        mid1 = sorted_array[n // 2 - 1]
+        mid2 = sorted_array[n // 2]
+        median = (mid1 + mid2) / 2
+    else:
+        median = sorted_array[n // 2]
+    
+    return median
 
-def list_to_linked_list(input_list):
-    if not input_list:
-        return None
+# Example usage:
+arr1 = [1, 3, 5]
+arr2 = [2, 4, 6]
 
-    head = Node(input_list[0])
-    current = head
-    for i in range(1, len(input_list)):
-        node = Node(input_list[i])
-        current.next = node
-        current = node
+merged_array = merge_sort_arrays(arr1, arr2)
+print("Merged array:", merged_array)
 
-    return head
-
-# Example usage
-input_list = [1, 2, 3, 4, 5]
-linked_list = list_to_linked_list(input_list)
-print("Linked List:")
-current_node = linked_list
-while current_node:
-    print(current_node.value)
-    current_node = current_node.next
+median_result = find_median_merged_array(merged_array)
+print("Median of the merged array:", median_result)

@@ -3,8 +3,8 @@ from crewai_tools import BaseTool
 
 
 class CodeCleaningTool(BaseTool):
-    name = "Code Cleaning Tool"
-    description = "Useful for cleaning code snippets"
+    name: str = "Code Cleaning Tool"
+    description: str = "Useful for cleaning code snippets"
 
     def _run(self, text: str) -> str:
         """
