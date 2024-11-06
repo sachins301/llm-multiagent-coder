@@ -9,8 +9,10 @@ from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 
 from agents.developer_agent import DeveloperAgent
 from agents.lead_agent import LeadAgent
+from agents.tester_agent import TesterAgent
 from tasks.developer_task import DeveloperTask
 from tasks.lead_task import LeadTask
+from tasks.test_task import TestTask
 
 def run():
     input_expression = ''
@@ -92,6 +94,44 @@ def run():
     # Write the cleaned code to a file
     with open("generated_code.py", "w") as code_file:
         code_file.write(code)
+
+    ## Tester Crew Implementation
+    tester = TesterAgent().get_agent()
+    test_tasks = []
+    for subtask in subtasks:
+        prompt = f"""{subtask['prompt']}, Function name: {subtask['function_name']}"""
+        task = TestTask().test(prompt, tester)
+        test_tasks.append(task)
+
+
+    testing_crew = Crew(
+        agents = [tester],
+        tasks = [task for task in test_tasks],
+        process= Process.sequential,
+        memory= True,
+        verbose= True,
+        embedder={
+            "provider": "ollama",
+            "config": {
+                "model": "mxbai-embed-large"
+            }
+        }
+    )
+
+    test_result = testing_crew.kickoff()
+    # Extract all content within triple backticks
+    test_code_blocks = re.findall(r'```([\s\S]*?)```', test_result.raw)
+
+    # Join all extracted code blocks into a single string
+    test_code = "\n\n".join(test_code_blocks).strip()
+
+    # Display the cleaned code for verification
+    print("\n\n################################################")
+    print(test_code)
+
+    # Write the cleaned code to a file
+    with open("generated_test_code.py", "w") as code_file:
+        code_file.write(test_code)
 
 if __name__ == '__main__':
     load_dotenv()  # Load variables from .env file

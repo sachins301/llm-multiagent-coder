@@ -1,52 +1,34 @@
 import pandas as pd
-import numpy as np
 
 def read_csv_file(file_path):
     try:
         df = pd.read_csv(file_path)
         return df
     except FileNotFoundError:
-        print("The file was not found.")
+        print("The file was not found. Please check the file path.")
         return None
-
-def handle_missing_values(df, method="impute"):
-    if method == "impute":
-        imputer = pd.DataFrame(np.nanmean(df))
-        for column in df.columns:
-            if df[column].dtype != 'object':
-                df[column] = df[column].fillna(imputer[column])
-        return df
-    elif method == "remove":
-        df.dropna(inplace=True)
-        return df
-    else:
-        print("Invalid method. Please choose either 'impute' or 'remove'.")
-        return None
-
-def convert_data_types(df):
-    data_types = {"column1": str, "column2": int, "column3": float}
-    for column in data_types:
-        if column in df.columns:
-            df[column] = df[column].astype(data_types[column])
-    return df
-
-def remove_duplicates(df):
-    try:
-        df = df.drop_duplicates()
-        return df
     except Exception as e:
-        print("An error occurred while removing duplicates:", str(e))
-        return None)
+        print(f"An error occurred: {e}")
+        return None
 
-def perform_data_cleaning(file_path):
-    df = read_csv_file(file_path)
-    if df is not None:
-        df = handle_missing_values(df)
-        df = convert_data_types(df)
-        df = remove_duplicates(df)
+def clean_data(df):
+    # Handle missing values
+    df.fillna('Unknown', inplace=True)
+
+    # Convert data types if necessary
+    for column in df.columns:
+        if df[column].dtype == 'object' and df[column].isnull().any():
+            df[column] = df[column].fillna('')
+        elif df[column].dtype == 'int64':
+            df[column] = pd.to_numeric(df[column], errors='coerce')
+        elif df[column].dtype == 'float64':
+            df[column] = pd.to_numeric(df[column], errors='coerce')
+
     return df
 
-# Example usage:
-file_path = "path/to/your/file.csv"
-cleaned_df = perform_data_cleaning(file_path)
-print(cleaned_df)
+# You can use this function by calling it with a CSV file path as an argument
+file_path = "path_to_your_csv_file.csv"
+result = read_csv_file(file_path)
+if result is not None:
+    cleaned_data = clean_data(result)
+    print(cleaned_data.head())
