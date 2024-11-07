@@ -9,7 +9,7 @@ class TesterAgent():
     def get_agent(self) -> Agent:
         return Agent(
             role = "Tester",
-            goal = "Write 5 test cases for the python function to implement the instruction and combine all the code snippets into a single python file",
+            goal = "Write test cases for the python function to implement the instruction and combine all the code snippets into a single python file",
             backstory = "You are a tester that returns a python test cases for all the input function description",
             llm = self.llm,
             verbose= True

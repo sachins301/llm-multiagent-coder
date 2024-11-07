@@ -1,4 +1,5 @@
 import ast
+import json
 import re
 import sys
 from dotenv import load_dotenv
@@ -98,10 +99,10 @@ def run():
     ## Tester Crew Implementation
     tester = TesterAgent().get_agent()
     test_tasks = []
-    for subtask in subtasks:
-        prompt = f"""{subtask['prompt']}, Function name: {subtask['function_name']}"""
-        task = TestTask().test(prompt, tester)
-        test_tasks.append(task)
+
+    prompt = f"""Developer Code tasks : \n{json.dumps(subtasks)}"""
+    task = TestTask().test(prompt, tester)
+    test_tasks.append(task)
 
 
     testing_crew = Crew(

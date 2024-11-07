@@ -1,69 +1,67 @@
 import pandas as pd
-import unittest
+from generated_code import read_csv_file, handle_missing_values, drop_unnecessary_columns, perform_data_types_conversion, remove_duplicates
 
-def read_csv_file(file_path):
-    try:
-        df = pd.read_csv(file_path)
-        return df
-    except FileNotFoundError:
-        print("File not found")
-        return None
+def test_read_csv_file():
+    df = read_csv_file('test.csv')
+    assert isinstance(df, pd.DataFrame)
+    assert len(df.columns) > 0
+    assert len(df.index) > 0
 
-class TestReadCsvFile(unittest.TestCase):
 
-    def test_read_csv_file(self):
-        file_path = 'test.csv'
-        self.assertIsNotNone(read_csv_file(file_path))
+def test_handle_missing_values():
+    df = pd.DataFrame({
+        'A': [1, 2, None, 4],
+        'B': ['a', 'b', None, 'd']
+    })
+    handled_df = handle_missing_values(df)
+    assert isinstance(handled_df, pd.DataFrame)
+    for col in df.columns:
+        if df[col].dtype == object:
+            assert len(handled_df[handled_df[col].isna()].index) == 0
 
-    def test_read_non_existent_file(self):
-        file_path = 'non-existent-file.csv'
-        result = read_csv_file(file_path)
-        self.assertIsNone(result)
 
-    def test_read_file_with_header(self):
-        file_path = 'file-with-header.csv'
-        df = read_csv_file(file_path)
-        self.assertTrue(df.columns.size > 0)
+def test_drop_unnecessary_columns():
+    df = pd.DataFrame({
+        'A': [1, 2, 3, 4],
+        'B': ['a', 'b', 'c', 'd'],
+        'C': [5, 6, None, 8]
+    })
+    dropped_df = drop_unnecessary_columns(df)
+    assert isinstance(dropped_df, pd.DataFrame)
+    for col in df.columns:
+        if len(dropped_df[col].unique()) < 10 and not all(pd.isna(dropped_df[col])):
+            assert False
 
-    def test_read_file_without_header(self):
-        file_path = 'file-without-header.csv'
-        df = read_csv_file(file_path)
-        self.assertEqual(df.columns.size, 0)
 
-    def test_read_file_with_error(self):
-        file_path = 'file-with-error.csv'
-        with self.assertRaises(FileNotFoundError):
-            read_csv_file(file_path)
+def test_perform_data_types_conversion():
+    df = pd.DataFrame({
+        'A': [1, 2, 3, 4],
+        'B': ['a', 'b', None, 'd'],
+        'C': ['low', 'medium', 'high']
+    })
+    converted_df = perform_data_types_conversion(df)
+    assert isinstance(converted_df, pd.DataFrame)
+    for col in df.columns:
+        if df[col].dtype == object and len(converted_df[converted_df[col].isna()].index) > 0:
+            assert False
 
-class TestDataCleaning(unittest.TestCase):
 
-    def test_clean_data(self):
-        # Test the clean_data function
-        df = pd.DataFrame({'Name': ['John', 'Jane', '', None], 'Age': [25, 30, np.nan, 35]})
-        cleaned_df = clean_data(df)
-        self.assertEqual(cleaned_df.shape[0], df.shape[0])
-        self.assertEqual(cleaned_df.shape[1], df.shape[1])
+def test_remove_duplicates():
+    df = pd.DataFrame({
+        'A': [1, 2, 3, 4],
+        'B': ['a', 'b', 'c', 'd'],
+        'C': [5, 6, 7, 8]
+    })
+    removed_df = remove_duplicates(df)
+    assert isinstance(removed_df, pd.DataFrame)
+    for col in df.columns:
+        if not all(removed_df[col].unique() == df[col].unique()):
+            assert False
 
-    def test_clean_data_missing_values(self):
-        # Test the clean_data function for missing values
-        df = pd.DataFrame({'Name': ['John', 'Jane', '', None, np.nan], 'Age': [25, 30, 31, 32, 33]})
-        cleaned_df = clean_data(df)
-        self.assertEqual(cleaned_df.shape[0], df.shape[0])
-        self.assertEqual(cleaned_df.shape[1], df.shape[1])
 
-    def test_clean_data_non_numeric_values(self):
-        # Test the clean_data function for non-numeric values
-        df = pd.DataFrame({'Name': ['John', 'Jane', '', None, np.nan], 'Age': [25, 30, '31', 32, 33]})
-        cleaned_df = clean_data(df)
-        self.assertEqual(cleaned_df.shape[0], df.shape[0])
-        self.assertEqual(cleaned_df.shape[1], df.shape[1])
-
-    def test_clean_data_inconsistent_types(self):
-        # Test the clean_data function for inconsistent data types
-        df = pd.DataFrame({'Name': ['John', 'Jane', '', None, np.nan], 'Age': [25, 30, 31.0, 32.5, 33]})
-        cleaned_df = clean_data(df)
-        self.assertEqual(cleaned_df.shape[0], df.shape[0])
-        self.assertEqual(cleaned_df.shape[1], df.shape[1])
-
-if __name__ == '__main__':
-    unittest.main()
+if __name__ == "__main__":
+    # test_read_csv_file()
+    test_handle_missing_values()
+    test_drop_unnecessary_columns()
+    test_perform_data_types_conversion()
+    test_remove_duplicates()
