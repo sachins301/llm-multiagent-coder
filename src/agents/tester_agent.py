@@ -24,3 +24,13 @@ class TesterAgent():
             tools=[CodeCleaningTool()],
             verbose= True
         )
+    
+    # def run_tests(self, testfile: str, devfile: str) -> Agent:
+    #     return Agent(
+    #         role = "Tester",
+    #         goal = "Run the test cases using the test file and dev file. Depending on the output of test case, make necessary changes in the dev file",
+    #         backstory = "You are a teste",
+    #         llm = self.llm,
+    #         tools=[CodeExecutor(testfile)],
+    #         verbose= True
+    #     )
