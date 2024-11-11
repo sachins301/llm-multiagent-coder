@@ -13,6 +13,22 @@ class DeveloperTask():
             agent = agent
         )
     
+    def debug(self, dev_code: str, error_msg: str, agent: Agent) -> Task:
+        return Task(
+            description= f"""
+                Dev Code:
+                {dev_code}
+                \n
+                Error Message:
+                {error_msg}
+
+                Modify the dev code to fix the error. 
+            """,
+            goal = "Return modified python code",
+            expected_output= "Python code snippet",
+            agent= agent
+        )
+    
     def clean(self, agent: Agent) -> Task:
         return Task(
             description= """DO NOT INCLUDE ANY TEXT OTHER THAN THE CODE SNIPPET. Clean the input llm response to remove any unwanted text. Output should be a python code snippet that can be executed

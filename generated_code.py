@@ -26,7 +26,7 @@ def handle_missing_values(df):
     
     # Remove rows with more than 50% missing values
     threshold = 0.5
-    df.dropna( inplace=True)
+    df.dropna(inplace=True, thresh=int(threshold * len(df)))
     return df
 
 def drop_unnecessary_columns(df, min_unique_values=10):
@@ -46,7 +46,7 @@ def perform_data_types_conversion(df):
     for col in numerical_cols:
         if col not in df.columns:
             continue
-        df[col] = pd.to_numeric(df[col])
+        df[col] = pd.to_numeric(df[col], errors='coerce')
 
     for col in categorical_cols:
         if col not in df.columns:
