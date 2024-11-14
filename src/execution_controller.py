@@ -13,6 +13,7 @@ class ExecutionController:
     def __init__(self):
         pass
 
+    @staticmethod
     def _run(dev_code_file, test_code_file) -> str:
         exec_status = CodeExecutor._run(test_code_file)
         print("Starting exec status : ", exec_status)
