@@ -23,10 +23,14 @@ class ExecutionController:
 
         print("Dev code read : ", dev_code)
 
+        error_cache = set()
+        error_hash = hash(exec_status)
+        error_cache.add(error_hash)
         trial_count = 0
 
-        while exec_status != "Success" and trial_count < 3:
+        while exec_status != "Success":
             trial_count += 1
+            print(f"\n\n################## TRIAL COUNT: {trial_count} ##############################")
             dev_agent = DeveloperAgent().get_agent()
             debug_task = DeveloperTask().debug(dev_code, exec_status, dev_agent)
             debug_crew = Crew(
@@ -67,6 +71,13 @@ class ExecutionController:
                 code_file.write(code)
 
             exec_status = CodeExecutor._run(test_code_file)
+            error_hash = hash(exec_status)
+
+            if error_hash in error_cache:
+                print("Error hash already exists in cache. LLM is stuck.")
+                break
+
+            error_cache.add(error_hash)
     
 
 if __name__ == '__main__':

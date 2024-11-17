@@ -1,51 +1,34 @@
-import unittest
-from generated_code import load_csv, handle_missing_values, convert_data_types, remove_duplicates, data_transformation, save_cleaned_data
 
-class TestFunctions(unittest.TestCase):
+import pandas as pd
+from generated_code import *
 
-    def test_load_csv(self):
-        # Mock input
-        mock_file_path = "path/to/mock/file.csv"
-        mock_data = [["id", "name"], ["1", "John"], ["2", "Jane"]]
+def test_function1():
+    df = pd.DataFrame({'A': [1, 2, None], 'B': [3, 4, 5]})
+    result = function1(df)
+    assert isinstance(result, pd.DataFrame)
+    assert (result == df).all().all()
 
-        # Assert function call
-        self.assertEqual(load_csv(mock_file_path), mock_data)
+def test_function2():
+    df = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
+    result = function2(df)
+    assert isinstance(result, pd.DataFrame)
+    assert (result == df).all().all()
 
-    def test_handle_missing_values(self):
-        # Mock input
-        mock_data = [["id", "name"], ["1", "John"], [None, "Jane"]]
+def test_function3():
+    df = pd.DataFrame({'A': ['a', 'b', 'c'], 'B': [1, 2, 3], 'C': [4, 5, 6]})
+    columns_to_keep = ['A', 'B']
+    result = function3(df, columns_to_keep)
+    assert isinstance(result, pd.DataFrame)
+    assert set(result.columns) == set(columns_to_keep)
 
-        # Assert function call
-        self.assertEqual(handle_missing_values(mock_data), [["id", "name"], ["1", "John"], ["1", "Jane"]])
+def test_function4():
+    df = pd.DataFrame({'A': ['a', 'b', 'c'], 'B': [1, 2, 3], 'C': [4, 5, 6]})
+    result = function4(df)
+    assert isinstance(result, pd.DataFrame)
+    assert (result == df).all().all()
 
-    def test_convert_data_types(self):
-        # Mock input
-        mock_data = [["id", "age"], ["1", 25], ["2", 30]]
-
-        # Assert function call
-        self.assertEqual(convert_data_types(mock_data), [["id", "age"], ["1", "25"], ["2", "30"]])
-
-    def test_remove_duplicates(self):
-        # Mock input
-        mock_data = [["id", "name"], ["1", "John"], ["1", "John"], ["2", "Jane"]]
-
-        # Assert function call
-        self.assertEqual(remove_duplicates(mock_data), [["id", "name"], ["1", "John"], ["2", "Jane"]])
-
-    def test_data_transformation(self):
-        # Mock input
-        mock_data = [["id", "age"], ["1", 25], ["2", 30]]
-
-        # Assert function call
-        self.assertEqual(data_transformation(mock_data), [["id", "age"], ["1", 25.0], ["2", 30.0]])
-
-    def test_save_cleaned_data(self):
-        # Mock input
-        mock_data = [["id", "name"], ["1", "John"], ["2", "Jane"]]
-        mock_file_path = "path/to/mock/file.csv"
-
-        # Assert function call
-        self.assertEqual(save_cleaned_data(mock_data, mock_file_path), None)
-
-if __name__ == "__main__":
-    unittest.main()
+def test_function5():
+    df = pd.DataFrame({'A': [1, 2, None], 'B': [3, 4, 5]})
+    result = function5(df)
+    assert isinstance(result, pd.DataFrame)
+    assert (result == df).all().all()
